@@ -9,7 +9,7 @@ import {
   FileIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { getDocument, getDownloadUrl } from "@/lib/gemini";
+import { getDocument, getDownloadUrl, getViewUrl } from "@/lib/gemini";
 import { highlightDifferences, getDocumentTypeLabel } from "@/lib/docUtils";
 import { PreviewTab, DocumentResult, ExportFormat } from "@/lib/types";
 
@@ -61,12 +61,13 @@ export default function Results({ documentId, onReset }: ResultsProps) {
     if (!documentData) return;
     
     const downloadUrl = getDownloadUrl(documentId, format);
-    const link = document.createElement("a");
+    // Use window.document instead of document to avoid confusion with documentData.document
+    const link = window.document.createElement("a");
     link.href = downloadUrl;
     link.download = `${documentData.document.fileName}.${format}`;
-    document.body.appendChild(link);
+    window.document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    window.document.body.removeChild(link);
   };
 
   if (loading) {
@@ -105,11 +106,28 @@ export default function Results({ documentId, onReset }: ResultsProps) {
 
             <div className="bg-white border rounded-lg overflow-hidden">
               <TabsContent value="original" className="p-4 h-[600px] overflow-y-auto">
-                <pre className="whitespace-pre-wrap text-sm">{document.originalContent}</pre>
+                {document.fileType === 'pdf' ? (
+                  <iframe 
+                    src={getViewUrl(documentId)} 
+                    className="w-full h-full border-0" 
+                    title="Original Document PDF"
+                  />
+                ) : (
+                  <pre className="whitespace-pre-wrap text-sm">{document.originalContent}</pre>
+                )}
               </TabsContent>
 
               <TabsContent value="tailored" className="p-4 h-[600px] overflow-y-auto">
-                <pre className="whitespace-pre-wrap text-sm">{document.tailoredContent}</pre>
+                {document.fileType === 'pdf' ? (
+                  <div className="text-center p-4">
+                    <p className="mb-4">PDF documents can't display tailored content preview.</p>
+                    <Button onClick={() => handleDownload("pdf")}>
+                      Download Tailored PDF
+                    </Button>
+                  </div>
+                ) : (
+                  <pre className="whitespace-pre-wrap text-sm">{document.tailoredContent}</pre>
+                )}
               </TabsContent>
 
               <TabsContent value="diff" className="p-4 h-[600px] overflow-y-auto">

@@ -51,3 +51,8 @@ export async function getDocument(documentId: number): Promise<DocumentResult> {
 export function getDownloadUrl(documentId: number, format: string): string {
   return `/api/documents/${documentId}/download/${format}`;
 }
+
+// Generate view URL for document (for PDF preview)
+export function getViewUrl(documentId: number): string {
+  return `/api/documents/${documentId}/view`;
+}

@@ -222,19 +222,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!document) {
         return res.status(404).json({ message: "Document not found" });
       }
+
+      // Use the original file for now
+      // In a production app, we would generate the tailored file in the requested format
+      const filePath = document.originalFilePath;
       
-      // In a real implementation, we would create the requested file format
-      // For now we just return the tailored content as a text file
-      const content = document.tailoredContent || document.originalContent;
+      if (!filePath || !fs.existsSync(filePath)) {
+        return res.status(404).json({ message: "File not found" });
+      }
+
+      // Set content type based on file extension
+      let contentType = "application/octet-stream"; // Default binary
+      if (document.fileType === "pdf") {
+        contentType = "application/pdf";
+      } else if (document.fileType === "docx") {
+        contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      }
       
-      res.setHeader("Content-Type", "text/plain");
+      // Set headers for download
+      res.setHeader("Content-Type", contentType);
       res.setHeader("Content-Disposition", `attachment; filename="${document.fileName}"`);
-      res.send(content);
+      
+      // Stream the file to the response
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
     } catch (error) {
       console.error("Download error:", error);
       res.status(500).json({ message: "Failed to download document" });
     }
   });
+
+  // View document (for PDF preview)
+  apiRouter.get("/documents/:id/view", async (req, res) => {
+    try {
+      const documentId = parseInt(req.params.id);
+      
+      // Get document
+      const document = await storage.getDocument(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      const filePath = document.originalFilePath;
+      
+      if (!filePath || !fs.existsSync(filePath)) {
+        return res.status(404).json({ message: "File not found" });
+      }
+
+      // Set content type based on file extension
+      let contentType = "application/octet-stream"; // Default binary
+      if (document.fileType === "pdf") {
+        contentType = "application/pdf";
+      } else if (document.fileType === "docx") {
+        contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      }
+      
+      // Set headers for inline viewing (not download)
+      res.setHeader("Content-Type", contentType);
+      res.setHeader("Content-Disposition", `inline; filename="${document.fileName}"`);
+      
+      // Stream the file to the response
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
+    } catch (error) {
+      console.error("View error:", error);
+      res.status(500).json({ message: "Failed to view document" });
+    }
+  });
+
+  // Serve uploaded files statically (alternative approach)
+  app.use('/uploads', express.static(uploadsDir));
 
   // Register API routes
   app.use("/api", apiRouter);
