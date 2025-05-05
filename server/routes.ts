@@ -548,15 +548,15 @@ async function processDocument(documentId: number, jobId: number, processingId: 
     // Update progress
     await storage.updateProcessing(processingId, { progress: 30 });
     
-    // Use Gemini to tailor the content - no templates
+    // Use Gemini to tailor the content - with requested format
     // Prepare prompt for Gemini
     const prompt = `
 You are a professional document tailoring assistant with expertise in helping job applicants match their experience to specific job requirements.
 
 TASK:
 ${document.documentType === 'cv' 
-  ? 'Tailor this CV/Resume for a specific job opening.' 
-  : 'Create a professional cover letter based on this resume for a specific job opening.'}
+  ? 'Update this CV/Resume tailored specifically for the job opening below.' 
+  : 'Create a professional cover letter based on this resume for the specific job opening below.'}
 
 JOB DETAILS:
 - Title: ${job.title}
@@ -569,24 +569,26 @@ ${content}
 INSTRUCTIONS:
 ${document.documentType === 'cv' 
   ? `1. Analyze my CV/resume and the job description to identify alignment between my skills and the job requirements.
-2. Rewrite my CV content to emphasize relevant skills, experiences, and achievements that match this specific job.
+2. Update my CV content to emphasize relevant skills, experiences, and achievements that match this specific job.
 3. Use relevant keywords from the job description naturally throughout the CV.
 4. Preserve the original sections and structure where possible (e.g., Education, Experience, Skills).
 5. Make sure to adjust bullet points to highlight accomplishments that relate to this position.
-6. Only include information from my original document - do not invent new experiences or skills.`
-  : `1. Create a professional cover letter addressed to the hiring manager at ${job.company} for the ${job.title} position.
-2. Use relevant keywords from the job description in a natural way.
-3. Structure the letter with: formal header, introduction explaining my interest, 1-2 paragraphs highlighting relevant experiences/skills from my resume, and a conclusion.
-4. Keep the tone professional but engaging.
-5. Use information from my resume to highlight my qualifications - do not invent new qualifications.
-6. Include a clear call to action in the closing paragraph.
-7. Format as a proper business letter with date, address block, salutation, and professional closing.`
+6. Only include information from my original document - do not invent new experiences or skills.
+7. Prioritize updating the most relevant parts of my CV that match the position requirements.`
+  : `1. Start with a title in the format: "Cover letter for ${job.company}: ${job.title}"
+2. Create a professional cover letter addressed to the hiring manager at ${job.company} for the ${job.title} position.
+3. Use relevant keywords from the job description in a natural way.
+4. Structure the letter with: formal header, introduction explaining my interest, 1-2 paragraphs highlighting relevant experiences/skills from my resume, and a conclusion.
+5. Keep the tone professional but engaging.
+6. Use information from my resume to highlight my qualifications - do not invent new qualifications.
+7. Include a clear call to action in the closing paragraph.
+8. Format as a proper business letter with date, address block, salutation, and professional closing.`
 }
 
 IMPORTANT FORMATTING:
-1. Output format: Return ONLY the ${document.documentType === 'cv' ? 'rewritten CV/Resume' : 'complete cover letter'}.
-2. DO NOT include any explanations, headers like "REWRITTEN CONTENT:", or notes.
-3. ${document.documentType === 'cover' ? 'Make sure this is a proper cover letter, not a resume/CV.' : 'Make sure this is a properly formatted resume/CV.'}
+1. Output format: Return ONLY the ${document.documentType === 'cv' ? 'updated CV/Resume' : 'complete cover letter with title'}.
+2. DO NOT include any explanations, headers like "UPDATED CONTENT:", or notes.
+3. ${document.documentType === 'cover' ? 'Make sure to include the title in the format: "Cover letter for [Company]: [Position]" at the top.' : 'Make sure this is a properly formatted resume/CV.'}
 `;
     
     // Update progress

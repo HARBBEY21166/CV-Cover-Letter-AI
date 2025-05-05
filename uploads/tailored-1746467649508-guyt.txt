@@ -1,0 +1,23 @@
+[Your Name]
+[Your Address]
+[Your Phone Number]
+[Your Email]
+
+[Date]
+
+Hiring Manager
+Remote Recruitment
+[Address if available, otherwise omit]
+
+Dear Hiring Manager,
+
+I am writing to express my enthusiastic interest in the UI Designer position at Remote Recruitment, as advertised on [Platform where you saw the advert]. With my two years of experience as a Front-end Web Developer and a passion for creating user-friendly and visually stunning websites, I am confident that my skills and experience align perfectly with the requirements of this role.
+
+My experience in developing the WanderUnion project as a Freelance Front-end Developer involved close collaboration with clients to refine designs and ensure seamless UI/UX, particularly focusing on mobile responsiveness. This mirrors the role’s emphasis on designing and developing creative, visually appealing websites and gathering requirements in alignment with client objectives. Furthermore, my proficiency in HTML, CSS, JavaScript, React.js, and Bootstrap, coupled with my understanding of UI/UX principles, positions me well to contribute to your team's success in creating engaging online experiences.
+
+During my internship at GAO Tek, I gained hands-on experience building and managing WordPress sites, implementing SEO best practices, and customizing themes and plugins. This experience, along with my proven ability to translate brand concepts into aesthetically pleasing web experiences, as demonstrated in my personal projects like the Currency Converter Web App, makes me a strong candidate to meet the responsibilities outlined in the job description. I am adept at utilizing design tools and frameworks to deliver high-quality graphics and layouts while staying up-to-date with industry trends and responsive design techniques.
+
+I am eager to learn more about this opportunity and discuss how my skills and passion for web design can contribute to Remote Recruitment's success. Thank you for your time and consideration. I look forward to hearing from you soon.
+
+Sincerely,
+Abbey Aina
