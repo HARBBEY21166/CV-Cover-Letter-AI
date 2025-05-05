@@ -13,6 +13,7 @@ export interface JobDetails {
   title: string;
   company: string;
   description: string;
+  templateId?: number;
 }
 
 export interface ProcessingInfo {
