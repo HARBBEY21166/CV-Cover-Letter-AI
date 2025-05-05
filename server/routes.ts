@@ -548,8 +548,42 @@ async function processDocument(documentId: number, jobId: number, processingId: 
     // Update progress
     await storage.updateProcessing(processingId, { progress: 30 });
     
-    // Prepare prompt for Gemini
-    const prompt = `
+    let tailoredContent = "";
+    let tailoredFileName = "";
+    let tailoredFilePath = "";
+    
+    // Check if a template was selected
+    if (document.templateId) {
+      // Get the template
+      const template = await storage.getTemplate(document.templateId);
+      if (template) {
+        console.log(`Using template: ${template.name} for ${document.documentType}`);
+        
+        // Apply the template to the content
+        tailoredContent = applyTemplate(
+          template.content, 
+          content, 
+          document.documentType, 
+          {
+            title: job.title,
+            company: job.company,
+            description: job.description
+          }
+        );
+        
+        console.log("Generated content from template, length:", tailoredContent.length);
+        
+        // Update progress
+        await storage.updateProcessing(processingId, { progress: 70 });
+      } else {
+        console.log("Template not found, falling back to AI generation");
+      }
+    }
+    
+    // If no template was used or template application failed, use Gemini
+    if (!tailoredContent) {
+      // Prepare prompt for Gemini
+      const prompt = `
 You are a professional document tailoring assistant with expertise in helping job applicants match their experience to specific job requirements.
 
 TASK:
@@ -588,44 +622,22 @@ IMPORTANT FORMATTING:
 3. ${document.documentType === 'cover' ? 'Make sure this is a proper cover letter, not a resume/CV.' : 'Make sure this is a properly formatted resume/CV.'}
 `;
     
-    // Update progress
-    await storage.updateProcessing(processingId, { progress: 50 });
-    
-    // Call Gemini API to rewrite content
-    const result = await model.generateContent(prompt);
-    const tailoredContent = result.response.text();
-    
-    // Save tailored content
-    const tailoredFileName = `tailored-${Date.now()}-${document.fileName}`;
-    const tailoredFilePath = path.join(uploadsDir, tailoredFileName);
-    
-    // Handle file creation based on file type
-    if (document.fileType === "pdf") {
-      // For PDF files, we can't easily modify the content directly
-      // So we'll create a text file version instead
-      const textFileName = tailoredFileName.replace('.pdf', '.txt');
-      const textFilePath = path.join(uploadsDir, textFileName);
-      fs.writeFileSync(textFilePath, tailoredContent);
+      // Update progress
+      await storage.updateProcessing(processingId, { progress: 50 });
       
-      // For now, we'll just use the original PDF but save the tailored content
-      // In a production app, we would generate a new PDF with the tailored content
-      fs.copyFileSync(document.originalFilePath, tailoredFilePath);
-    } else if (document.fileType === "docx") {
-      // For DOCX, in a real app we would use docx.js to create a new document
-      // For now, we'll create a text file with the tailored content
-      const textFileName = tailoredFileName.replace('.docx', '.txt');
-      const textFilePath = path.join(uploadsDir, textFileName);
-      fs.writeFileSync(textFilePath, tailoredContent);
-      
-      // And also copy the original for download
-      fs.copyFileSync(document.originalFilePath, tailoredFilePath);
-    } else {
-      // For all other file types, just write the text directly
-      fs.writeFileSync(tailoredFilePath, tailoredContent);
+      // Call Gemini API to rewrite content
+      const result = await model.generateContent(prompt);
+      tailoredContent = result.response.text();
+      console.log("Generated content from AI, length:", tailoredContent.length);
     }
     
+    // Save tailored content
+    tailoredFileName = `tailored-${Date.now()}-${document.fileName}`;
+    tailoredFilePath = path.join(uploadsDir, tailoredFileName);
+    fs.writeFileSync(tailoredFilePath, tailoredContent);
+    
     // Update progress
-    await storage.updateProcessing(processingId, { progress: 75 });
+    await storage.updateProcessing(processingId, { progress: 90 });
     
     // Update document with tailored content and file path
     await storage.updateDocument(documentId, {
@@ -640,17 +652,23 @@ IMPORTANT FORMATTING:
       progress: 100,
     });
     
+    console.log(`Document processing completed for document ID: ${documentId}`);
   } catch (error) {
     console.error("Document processing error:", error);
-    // Update processing with error
-    await storage.updateProcessing(processingId, {
-      status: "failed",
-      errorMessage: error instanceof Error ? error.message : "Unknown error",
-    });
     
-    // Update document status
-    await storage.updateDocument(documentId, {
-      status: "failed",
-    });
+    try {
+      // Update processing with error
+      await storage.updateProcessing(processingId, {
+        status: "failed",
+        errorMessage: error instanceof Error ? error.message : "Unknown error occurred",
+      });
+      
+      // Update document status
+      await storage.updateDocument(documentId, {
+        status: "failed",
+      });
+    } catch (updateError) {
+      console.error("Failed to update error status:", updateError);
+    }
   }
 }
