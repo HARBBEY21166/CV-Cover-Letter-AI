@@ -56,3 +56,12 @@ export function getDownloadUrl(documentId: number, format: string): string {
 export function getViewUrl(documentId: number): string {
   return `/api/documents/${documentId}/view`;
 }
+
+// Update document content (for manual text entry)
+export async function updateDocumentContent(
+  documentId: number,
+  content: string
+): Promise<{ success: boolean }> {
+  const res = await apiRequest("POST", `/api/documents/${documentId}/content`, { content });
+  return res.json();
+}

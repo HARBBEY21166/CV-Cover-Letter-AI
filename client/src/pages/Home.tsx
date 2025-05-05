@@ -8,6 +8,7 @@ import UploadDocument from "@/components/steps/UploadDocument";
 import JobDetails from "@/components/steps/JobDetails";
 import Processing from "@/components/steps/Processing";
 import Results from "@/components/steps/Results";
+import ManualTextEntry from "@/components/steps/ManualTextEntry";
 import { DocumentType } from "@/lib/types";
 import { Sparkles, FileText, Clock } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -16,12 +17,27 @@ export default function Home() {
   const [step, setStep] = useState(1);
   const [documentId, setDocumentId] = useState<number | null>(null);
   const [fileName, setFileName] = useState<string>("");
+  const [fileType, setFileType] = useState<string>("");
   const [documentType, setDocumentType] = useState<DocumentType>("cv");
+  const [needsManualEntry, setNeedsManualEntry] = useState(false);
 
-  const handleUploadComplete = (id: number, name: string, type: DocumentType) => {
+  const handleUploadComplete = (id: number, name: string, type: DocumentType, fileExt: string) => {
     setDocumentId(id);
     setFileName(name);
     setDocumentType(type);
+    setFileType(fileExt);
+    
+    // If the file is a PDF, we need manual text entry
+    if (fileExt === "pdf") {
+      setNeedsManualEntry(true);
+      setStep(1.5); // Using 1.5 to represent a step between 1 and 2
+    } else {
+      setNeedsManualEntry(false);
+      setStep(2);
+    }
+  };
+
+  const handleManualEntryComplete = () => {
     setStep(2);
   };
 
@@ -38,6 +54,8 @@ export default function Home() {
     setStep(1);
     setDocumentId(null);
     setFileName("");
+    setFileType("");
+    setNeedsManualEntry(false);
   };
 
   return (
@@ -79,11 +97,20 @@ export default function Home() {
             {step === 1 && (
               <UploadDocument onComplete={handleUploadComplete} />
             )}
+            
+            {step === 1.5 && documentId && (
+              <ManualTextEntry 
+                documentId={documentId}
+                fileName={fileName}
+                onBack={() => setStep(1)}
+                onComplete={handleManualEntryComplete}
+              />
+            )}
 
             {step === 2 && documentId && (
               <JobDetails 
                 documentId={documentId} 
-                onBack={() => setStep(1)} 
+                onBack={() => needsManualEntry ? setStep(1.5) : setStep(1)} 
                 onComplete={handleJobDetailsComplete} 
               />
             )}

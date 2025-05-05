@@ -9,7 +9,7 @@ import { uploadDocument } from "@/lib/gemini";
 import { useToast } from "@/hooks/use-toast";
 
 interface UploadDocumentProps {
-  onComplete: (documentId: number, fileName: string, documentType: DocumentType) => void;
+  onComplete: (documentId: number, fileName: string, documentType: DocumentType, fileExt: string) => void;
 }
 
 export default function UploadDocument({ onComplete }: UploadDocumentProps) {
@@ -79,7 +79,8 @@ export default function UploadDocument({ onComplete }: UploadDocumentProps) {
     
     try {
       const result = await uploadDocument(file, documentType);
-      onComplete(result.id, result.fileName, documentType);
+      const fileExt = file.name.split('.').pop()?.toLowerCase() || '';
+      onComplete(result.id, result.fileName, documentType, fileExt);
     } catch (error) {
       toast({
         title: "Upload failed",

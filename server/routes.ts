@@ -159,6 +159,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update document content (for manual text entry)
+  apiRouter.post("/documents/:id/content", async (req, res) => {
+    try {
+      const documentId = parseInt(req.params.id);
+      const { content } = req.body;
+      
+      if (!content) {
+        return res.status(400).json({ message: "Content is required" });
+      }
+      
+      // Get the document
+      const document = await storage.getDocument(documentId);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      // Update the document with the provided content
+      const updatedDoc = await storage.updateDocument(documentId, {
+        originalContent: content,
+      });
+      
+      res.json({
+        success: true,
+        document: updatedDoc,
+      });
+    } catch (error) {
+      console.error("Content update error:", error);
+      res.status(500).json({ message: "Failed to update document content" });
+    }
+  });
+
   // Get document processing status
   apiRouter.get("/documents/:id/status", async (req, res) => {
     try {
