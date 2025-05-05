@@ -107,64 +107,143 @@ export default function Results({ documentId, onReset }: ResultsProps) {
             <div className="bg-white border rounded-lg overflow-hidden">
               <TabsContent value="original" className="p-4 h-[600px] overflow-y-auto">
                 {document.fileType === 'pdf' ? (
-                  <iframe 
-                    src={getViewUrl(documentId)} 
-                    className="w-full h-full border-0" 
-                    title="Original Document PDF"
-                  />
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 border border-gray-200 rounded-md p-4 mb-4">
+                      <h4 className="font-medium text-gray-800 mb-2">Original PDF Document</h4>
+                      <p className="text-gray-700 text-sm">Your uploaded PDF document:</p>
+                    </div>
+                    
+                    <iframe 
+                      src={getViewUrl(documentId)} 
+                      className="w-full h-[450px] border border-gray-200 rounded" 
+                      title="Original Document PDF"
+                    />
+                  </div>
                 ) : (
-                  <pre className="whitespace-pre-wrap text-sm">{document.originalContent}</pre>
+                  <div className="space-y-4">
+                    <div className="bg-gray-50 border border-gray-200 rounded-md p-4 mb-4">
+                      <h4 className="font-medium text-gray-800 mb-2">Original Document Content</h4>
+                      <p className="text-gray-700 text-sm">Your uploaded document content:</p>
+                    </div>
+                    
+                    <div className="border border-gray-200 rounded-md p-4 bg-white">
+                      <pre className="whitespace-pre-wrap text-sm font-serif">{document.originalContent || "No content available."}</pre>
+                    </div>
+                  </div>
                 )}
               </TabsContent>
 
               <TabsContent value="tailored" className="p-4 h-[600px] overflow-y-auto">
                 {document.fileType === 'pdf' ? (
-                  <div className="text-center p-4">
-                    <p className="mb-4">PDF documents can't display tailored content preview.</p>
-                    <Button onClick={() => handleDownload("pdf")}>
-                      Download Tailored PDF
-                    </Button>
+                  <div className="space-y-4">
+                    <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mb-4">
+                      <h4 className="font-medium text-amber-800 mb-2">Tailored Content Preview</h4>
+                      <p className="text-amber-700 text-sm">PDF documents can't be modified directly, but we've generated tailored content for you below:</p>
+                    </div>
+                    
+                    <div className="border border-gray-200 rounded-md p-4 bg-white">
+                      <pre className="whitespace-pre-wrap text-sm font-serif">{document.tailoredContent || "No tailored content available."}</pre>
+                    </div>
+                    
+                    <div className="text-center mt-4">
+                      <p className="text-sm text-gray-500 mb-2">You can download this content as a text file:</p>
+                      <Button onClick={() => handleDownload("pdf")} size="sm">
+                        Download Tailored Content
+                      </Button>
+                    </div>
                   </div>
                 ) : (
-                  <pre className="whitespace-pre-wrap text-sm">{document.tailoredContent}</pre>
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
+                      <h4 className="font-medium text-blue-800 mb-2">Tailored Content Preview</h4>
+                      <p className="text-blue-700 text-sm">We've tailored your document content based on the job requirements:</p>
+                    </div>
+                    
+                    <div className="border border-gray-200 rounded-md p-4 bg-white">
+                      <pre className="whitespace-pre-wrap text-sm font-serif">{document.tailoredContent || "No tailored content available."}</pre>
+                    </div>
+                    
+                    <div className="text-center mt-4">
+                      <p className="text-sm text-gray-500 mb-2">Download the tailored document:</p>
+                      <div className="flex gap-2 justify-center">
+                        <Button onClick={() => handleDownload("docx")} size="sm">DOCX</Button>
+                        <Button onClick={() => handleDownload("pdf")} size="sm" variant="outline">PDF</Button>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </TabsContent>
 
               <TabsContent value="diff" className="p-4 h-[600px] overflow-y-auto">
                 <div className="space-y-4">
-                  {differences.added.length > 0 && (
-                    <div className="p-3 border rounded-md bg-green-50 border-green-200">
-                      <div className="text-sm text-gray-600 mb-1">Added:</div>
-                      {differences.added.map((item, i) => (
-                        <p key={`added-${i}`} className="text-green-700 font-medium">{item}</p>
-                      ))}
+                  <div className="bg-indigo-50 border border-indigo-200 rounded-md p-4 mb-4">
+                    <h4 className="font-medium text-indigo-800 mb-2">Document Differences</h4>
+                    <p className="text-indigo-700 text-sm">Here's how your document has been tailored to match the job requirements:</p>
+                  </div>
+                
+                  {(differences.added.length > 0 || 
+                    differences.removed.length > 0 || 
+                    differences.modified.length > 0) ? (
+                    <div className="space-y-6">
+                      {differences.added.length > 0 && (
+                        <div className="border rounded-md overflow-hidden">
+                          <div className="bg-green-100 px-4 py-2 border-b border-green-200">
+                            <h5 className="font-medium text-green-800">Added Content</h5>
+                            <p className="text-xs text-green-700">New content that emphasizes relevant skills and experiences</p>
+                          </div>
+                          <div className="p-4 bg-green-50">
+                            {differences.added.map((item, i) => (
+                              <div key={`added-${i}`} className="mb-2 last:mb-0">
+                                <p className="text-green-800 text-sm border-l-2 border-green-500 pl-3 py-1">{item}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {differences.removed.length > 0 && (
+                        <div className="border rounded-md overflow-hidden">
+                          <div className="bg-red-100 px-4 py-2 border-b border-red-200">
+                            <h5 className="font-medium text-red-800">Removed Content</h5>
+                            <p className="text-xs text-red-700">Content that was less relevant to this specific job</p>
+                          </div>
+                          <div className="p-4 bg-red-50">
+                            {differences.removed.map((item, i) => (
+                              <div key={`removed-${i}`} className="mb-2 last:mb-0">
+                                <p className="text-red-800 text-sm border-l-2 border-red-500 pl-3 py-1 line-through opacity-75">{item}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {differences.modified.length > 0 && (
+                        <div className="border rounded-md overflow-hidden">
+                          <div className="bg-amber-100 px-4 py-2 border-b border-amber-200">
+                            <h5 className="font-medium text-amber-800">Modified Content</h5>
+                            <p className="text-xs text-amber-700">Content that was rephrased to better match job requirements</p>
+                          </div>
+                          <div className="p-4 bg-amber-50">
+                            {differences.modified.map((item, i) => (
+                              <div key={`modified-${i}`} className="mb-2 last:mb-0">
+                                <p className="text-amber-800 text-sm border-l-2 border-amber-500 pl-3 py-1">{item}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  
-                  {differences.removed.length > 0 && (
-                    <div className="p-3 border rounded-md bg-red-50 border-red-200">
-                      <div className="text-sm text-gray-600 mb-1">Removed:</div>
-                      {differences.removed.map((item, i) => (
-                        <p key={`removed-${i}`} className="text-red-700 font-medium">{item}</p>
-                      ))}
+                  ) : (
+                    <div className="bg-white border rounded-md p-8 text-center">
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                        <RefreshCw className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <h5 className="text-lg font-medium text-gray-700 mb-2">No Significant Changes</h5>
+                      <p className="text-gray-500 max-w-md mx-auto">
+                        We didn't detect significant differences between your original and tailored documents.
+                        This could mean your document was already well-aligned with the job requirements.
+                      </p>
                     </div>
-                  )}
-                  
-                  {differences.modified.length > 0 && (
-                    <div className="p-3 border rounded-md bg-yellow-50 border-yellow-200">
-                      <div className="text-sm text-gray-600 mb-1">Modified:</div>
-                      {differences.modified.map((item, i) => (
-                        <p key={`modified-${i}`} className="text-yellow-700 font-medium">{item}</p>
-                      ))}
-                    </div>
-                  )}
-
-                  {differences.added.length === 0 && 
-                   differences.removed.length === 0 && 
-                   differences.modified.length === 0 && (
-                    <p className="text-gray-500 text-center py-4">
-                      No significant changes detected
-                    </p>
                   )}
                 </div>
               </TabsContent>

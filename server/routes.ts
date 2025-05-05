@@ -361,19 +361,34 @@ async function processDocument(documentId: number, jobId: number, processingId: 
     // Extract content from document
     let content = "";
     if (document.originalContent) {
-      // Use existing content if available
+      // Use existing content if available (from manual text entry)
       content = document.originalContent;
+      console.log("Using manually entered content:", content.substring(0, 100) + "...");
     } else if (document.originalFilePath && fs.existsSync(document.originalFilePath)) {
       // Try to extract content from file if path exists
       if (document.fileType === "pdf") {
-        // For PDFs, we'll need to either:
-        // 1. Have the user manually enter the content for now
-        // 2. Implement PDF text extraction (needs additional libraries)
-        content = "PDF content extraction not supported. Please enter content manually.";
+        // For PDFs, we should already have content from manual entry
+        // But if not, we'll need PDF extraction libraries
+        content = "PDF content should be entered manually. If you're seeing this, please go back and enter your document content.";
+        console.log("PDF without manual content entry detected");
       } else if (document.fileType === "docx") {
-        // For DOCX, we would use the docx library to extract text
-        // This is just a placeholder - would need actual implementation
-        content = "DOCX content extraction would be implemented here.";
+        try {
+          // Basic text extraction from DOCX
+          // In a production app, we'd use proper docx.js parsing
+          // This is a placeholder that at least provides some content
+          const fileContent = fs.readFileSync(document.originalFilePath, 'utf8');
+          content = fileContent.replace(/[^\x20-\x7E]/g, ' ').trim();
+          
+          // If content is still empty or invalid, use a message
+          if (!content || content.length < 50) {
+            content = "Your resume or CV content would be extracted here. The current implementation has limited DOCX parsing.";
+          }
+          
+          console.log("Extracted DOCX content:", content.substring(0, 100) + "...");
+        } catch (err) {
+          console.error("Error extracting DOCX content:", err);
+          content = "Failed to extract content from DOCX file. Please try manually entering your document content.";
+        }
       }
     }
     
@@ -386,20 +401,36 @@ async function processDocument(documentId: number, jobId: number, processingId: 
     
     // Prepare prompt for Gemini
     const prompt = `
-      You are a professional document tailoring assistant. I have a ${document.documentType === 'cv' ? 'CV/Resume' : 'Cover Letter'} 
-      that I want to tailor for a job application.
+      You are a professional document tailoring assistant with expertise in helping job applicants match their experience to specific job requirements.
       
-      The job title is: ${job.title}
-      The company is: ${job.company}
-      The job description is: ${job.description}
+      I have a ${document.documentType === 'cv' ? 'CV/Resume' : 'Cover Letter'} that I want to tailor for a specific job application.
       
-      Here is my original document content:
+      JOB DETAILS:
+      - Title: ${job.title}
+      - Company: ${job.company}
+      - Description: ${job.description}
+      
+      ORIGINAL DOCUMENT CONTENT:
       ${content}
       
-      Please analyze my document and rewrite it to better match the job requirements.
-      Focus on highlighting relevant skills and experiences that align with the job description.
-      Preserve the original formatting and structure as much as possible.
-      Return only the rewritten content.
+      INSTRUCTIONS:
+      ${document.documentType === 'cv' 
+        ? `1. Analyze my CV/resume and the job description to identify alignment between my skills and experiences and the job requirements.
+           2. Rewrite my CV content to emphasize relevant skills, experiences, and achievements that match this specific job.
+           3. Use relevant keywords from the job description naturally throughout the CV.
+           4. Preserve the original sections and structure where possible (e.g., Education, Experience, Skills).
+           5. Make sure to adjust bullet points to highlight accomplishments that relate to this position.
+           6. Only include information from my original document - do not invent new experiences or skills.`
+        : `1. Create a compelling cover letter that demonstrates why I'm a great fit for this specific position.
+           2. Use relevant keywords from the job description in a natural way.
+           3. Structure the letter with: introduction, 1-2 paragraphs highlighting relevant experiences/skills from my CV, and a conclusion.
+           4. Keep the tone professional but engaging.
+           5. Only reference skills and experiences that appear in my original document - do not invent new qualifications.
+           6. Include a clear call to action in the closing paragraph.`
+      }
+      
+      7. Output format: Return ONLY the rewritten content, ready to be placed in a ${document.documentType === 'cv' ? 'CV/Resume' : 'Cover Letter'}.
+      8. DO NOT include any explanations, headers like "REWRITTEN CONTENT:", or notes to me in your response.
     `;
     
     // Update progress
