@@ -9,12 +9,11 @@ import { useToast } from "@/hooks/use-toast";
 
 interface JobDetailsProps {
   documentId: number;
-  selectedTemplateId?: number;
   onBack: () => void;
   onComplete: (processingId: number) => void;
 }
 
-export default function JobDetails({ documentId, selectedTemplateId, onBack, onComplete }: JobDetailsProps) {
+export default function JobDetails({ documentId, onBack, onComplete }: JobDetailsProps) {
   const [jobTitle, setJobTitle] = useState("");
   const [company, setCompany] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -37,8 +36,7 @@ export default function JobDetails({ documentId, selectedTemplateId, onBack, onC
       const jobDetails: JobDetailsType = {
         title: jobTitle,
         company,
-        description: jobDescription,
-        templateId: selectedTemplateId
+        description: jobDescription
       };
 
       const result = await processDocument(documentId, jobDetails);

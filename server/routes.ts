@@ -484,7 +484,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-import { applyTemplate } from "./template-utils";
+// No longer using templates
 
 // Helper function to process document using Gemini API
 async function processDocument(documentId: number, jobId: number, processingId: number) {
@@ -548,7 +548,7 @@ async function processDocument(documentId: number, jobId: number, processingId: 
     // Update progress
     await storage.updateProcessing(processingId, { progress: 30 });
     
-    // Step 1: Always use Gemini to tailor the content first
+    // Use Gemini to tailor the content - no templates
     // Prepare prompt for Gemini
     const prompt = `
 You are a professional document tailoring assistant with expertise in helping job applicants match their experience to specific job requirements.
@@ -594,41 +594,10 @@ IMPORTANT FORMATTING:
     
     // Call Gemini API to rewrite content
     const result = await model.generateContent(prompt);
-    let tailoredContent = result.response.text();
+    const tailoredContent = result.response.text();
     console.log("Generated content from AI, length:", tailoredContent.length);
     
-    // Step 2: Now apply template formatting if selected (but keep the tailored content)
-    if (document.templateId) {
-      try {
-        const template = await storage.getTemplate(document.templateId);
-        if (template) {
-          console.log(`Applying template formatting: ${template.name} for ${document.documentType}`);
-          
-          // Extract key sections from the tailored content to use in the template
-          // This allows us to keep the tailored content while applying the template structure
-          const formattedContent = applyTemplate(
-            template.content,
-            tailoredContent, // Use the tailored content here, not the original
-            document.documentType,
-            {
-              title: job.title,
-              company: job.company,
-              description: job.description
-            }
-          );
-          
-          console.log("Applied template formatting, length:", formattedContent.length);
-          
-          // Update the tailored content with the formatted version
-          tailoredContent = formattedContent;
-        }
-      } catch (templateError) {
-        console.error("Error applying template:", templateError);
-        console.log("Keeping AI-generated content without template formatting");
-      }
-    }
-    
-    // Update progress
+    // Update progress - skip template application
     await storage.updateProcessing(processingId, { progress: 80 });
     
     // Save tailored content

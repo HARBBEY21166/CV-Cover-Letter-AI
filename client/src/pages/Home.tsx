@@ -23,7 +23,8 @@ export default function Home() {
     setDocumentId(id);
     setFileName(name);
     setDocumentType(type);
-    setStep(2);
+    // Skip template selection step - go directly to job details
+    setStep(3);
   };
 
   const handleTemplateSelected = (template: Template) => {
@@ -103,8 +104,7 @@ export default function Home() {
             {step === 3 && documentId && (
               <JobDetails 
                 documentId={documentId}
-                selectedTemplateId={selectedTemplate?.id}
-                onBack={() => setStep(2)} 
+                onBack={() => setStep(1)} 
                 onComplete={handleJobDetailsComplete} 
               />
             )}
