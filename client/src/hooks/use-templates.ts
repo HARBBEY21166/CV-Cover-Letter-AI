@@ -41,11 +41,7 @@ export function useCreateTemplate() {
   
   return useMutation({
     mutationFn: async (template: Omit<Template, "id">) => {
-      return apiRequest({
-        url: '/api/templates',
-        method: 'POST',
-        data: template,
-      });
+      return apiRequest('POST', '/api/templates', template);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/templates'] });
@@ -59,11 +55,7 @@ export function useUpdateTemplate() {
   
   return useMutation({
     mutationFn: async ({ id, template }: { id: number; template: Omit<Template, "id"> }) => {
-      return apiRequest({
-        url: `/api/templates/${id}`,
-        method: 'PUT',
-        data: template,
-      });
+      return apiRequest('PUT', `/api/templates/${id}`, template);
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['/api/templates'] });
@@ -78,10 +70,7 @@ export function useDeleteTemplate() {
   
   return useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest({
-        url: `/api/templates/${id}`,
-        method: 'DELETE',
-      });
+      return apiRequest('DELETE', `/api/templates/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/templates'] });

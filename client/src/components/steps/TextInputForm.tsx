@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { DocumentType } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import { Template } from "./TemplateSelector";
 
 interface TextInputFormProps {
   onComplete: (documentId: number, fileName: string, documentType: DocumentType) => void;
