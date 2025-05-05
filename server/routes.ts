@@ -254,9 +254,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Document not found" });
       }
 
-      // Use the original file for now
-      // In a production app, we would generate the tailored file in the requested format
-      const filePath = document.originalFilePath;
+      // Use the tailored file if available, otherwise use the original
+      const filePath = document.tailoredFilePath && fs.existsSync(document.tailoredFilePath) 
+        ? document.tailoredFilePath 
+        : document.originalFilePath;
       
       if (!filePath || !fs.existsSync(filePath)) {
         return res.status(404).json({ message: "File not found" });
@@ -294,7 +295,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Document not found" });
       }
 
-      const filePath = document.originalFilePath;
+      // Use the tailored file if available, otherwise use the original
+      const filePath = document.tailoredFilePath && fs.existsSync(document.tailoredFilePath) 
+        ? document.tailoredFilePath 
+        : document.originalFilePath;
       
       if (!filePath || !fs.existsSync(filePath)) {
         return res.status(404).json({ message: "File not found" });
@@ -409,8 +413,30 @@ async function processDocument(documentId: number, jobId: number, processingId: 
     const tailoredFileName = `tailored-${Date.now()}-${document.fileName}`;
     const tailoredFilePath = path.join(uploadsDir, tailoredFileName);
     
-    // Write tailored content to a file
-    fs.writeFileSync(tailoredFilePath, tailoredContent);
+    // Handle file creation based on file type
+    if (document.fileType === "pdf") {
+      // For PDF files, we can't easily modify the content directly
+      // So we'll create a text file version instead
+      const textFileName = tailoredFileName.replace('.pdf', '.txt');
+      const textFilePath = path.join(uploadsDir, textFileName);
+      fs.writeFileSync(textFilePath, tailoredContent);
+      
+      // For now, we'll just use the original PDF but save the tailored content
+      // In a production app, we would generate a new PDF with the tailored content
+      fs.copyFileSync(document.originalFilePath, tailoredFilePath);
+    } else if (document.fileType === "docx") {
+      // For DOCX, in a real app we would use docx.js to create a new document
+      // For now, we'll create a text file with the tailored content
+      const textFileName = tailoredFileName.replace('.docx', '.txt');
+      const textFilePath = path.join(uploadsDir, textFileName);
+      fs.writeFileSync(textFilePath, tailoredContent);
+      
+      // And also copy the original for download
+      fs.copyFileSync(document.originalFilePath, tailoredFilePath);
+    } else {
+      // For all other file types, just write the text directly
+      fs.writeFileSync(tailoredFilePath, tailoredContent);
+    }
     
     // Update progress
     await storage.updateProcessing(processingId, { progress: 75 });

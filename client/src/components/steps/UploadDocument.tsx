@@ -16,6 +16,7 @@ export default function UploadDocument({ onComplete }: UploadDocumentProps) {
   const [file, setFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState<DocumentType>("cv");
   const [uploading, setUploading] = useState(false);
+  const [fileType, setFileType] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -35,6 +36,7 @@ export default function UploadDocument({ onComplete }: UploadDocumentProps) {
       }
       
       setFile(selectedFile);
+      setFileType(fileExt);
     }
   };
 
@@ -62,6 +64,7 @@ export default function UploadDocument({ onComplete }: UploadDocumentProps) {
       }
       
       setFile(droppedFile);
+      setFileType(fileExt);
     }
   };
 
@@ -79,8 +82,7 @@ export default function UploadDocument({ onComplete }: UploadDocumentProps) {
     
     try {
       const result = await uploadDocument(file, documentType);
-      const fileExt = file.name.split('.').pop()?.toLowerCase() || '';
-      onComplete(result.id, result.fileName, documentType, fileExt);
+      onComplete(result.id, result.fileName, documentType, fileType);
     } catch (error) {
       toast({
         title: "Upload failed",
