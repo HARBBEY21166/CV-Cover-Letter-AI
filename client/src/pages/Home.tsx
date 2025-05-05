@@ -102,7 +102,8 @@ export default function Home() {
 
             {step === 3 && documentId && (
               <JobDetails 
-                documentId={documentId} 
+                documentId={documentId}
+                selectedTemplateId={selectedTemplate?.id}
                 onBack={() => setStep(2)} 
                 onComplete={handleJobDetailsComplete} 
               />

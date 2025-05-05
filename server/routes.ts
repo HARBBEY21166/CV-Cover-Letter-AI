@@ -12,6 +12,7 @@ import {
   insertProcessingSchema,
   insertTemplateSchema,
   templates,
+  type Document
 } from "@shared/schema";
 
 // Create uploads directory if it doesn't exist
