@@ -548,42 +548,9 @@ async function processDocument(documentId: number, jobId: number, processingId: 
     // Update progress
     await storage.updateProcessing(processingId, { progress: 30 });
     
-    let tailoredContent = "";
-    let tailoredFileName = "";
-    let tailoredFilePath = "";
-    
-    // Check if a template was selected
-    if (document.templateId) {
-      // Get the template
-      const template = await storage.getTemplate(document.templateId);
-      if (template) {
-        console.log(`Using template: ${template.name} for ${document.documentType}`);
-        
-        // Apply the template to the content
-        tailoredContent = applyTemplate(
-          template.content, 
-          content, 
-          document.documentType, 
-          {
-            title: job.title,
-            company: job.company,
-            description: job.description
-          }
-        );
-        
-        console.log("Generated content from template, length:", tailoredContent.length);
-        
-        // Update progress
-        await storage.updateProcessing(processingId, { progress: 70 });
-      } else {
-        console.log("Template not found, falling back to AI generation");
-      }
-    }
-    
-    // If no template was used or template application failed, use Gemini
-    if (!tailoredContent) {
-      // Prepare prompt for Gemini
-      const prompt = `
+    // Step 1: Always use Gemini to tailor the content first
+    // Prepare prompt for Gemini
+    const prompt = `
 You are a professional document tailoring assistant with expertise in helping job applicants match their experience to specific job requirements.
 
 TASK:
@@ -622,18 +589,51 @@ IMPORTANT FORMATTING:
 3. ${document.documentType === 'cover' ? 'Make sure this is a proper cover letter, not a resume/CV.' : 'Make sure this is a properly formatted resume/CV.'}
 `;
     
-      // Update progress
-      await storage.updateProcessing(processingId, { progress: 50 });
-      
-      // Call Gemini API to rewrite content
-      const result = await model.generateContent(prompt);
-      tailoredContent = result.response.text();
-      console.log("Generated content from AI, length:", tailoredContent.length);
+    // Update progress
+    await storage.updateProcessing(processingId, { progress: 50 });
+    
+    // Call Gemini API to rewrite content
+    const result = await model.generateContent(prompt);
+    let tailoredContent = result.response.text();
+    console.log("Generated content from AI, length:", tailoredContent.length);
+    
+    // Step 2: Now apply template formatting if selected (but keep the tailored content)
+    if (document.templateId) {
+      try {
+        const template = await storage.getTemplate(document.templateId);
+        if (template) {
+          console.log(`Applying template formatting: ${template.name} for ${document.documentType}`);
+          
+          // Extract key sections from the tailored content to use in the template
+          // This allows us to keep the tailored content while applying the template structure
+          const formattedContent = applyTemplate(
+            template.content,
+            tailoredContent, // Use the tailored content here, not the original
+            document.documentType,
+            {
+              title: job.title,
+              company: job.company,
+              description: job.description
+            }
+          );
+          
+          console.log("Applied template formatting, length:", formattedContent.length);
+          
+          // Update the tailored content with the formatted version
+          tailoredContent = formattedContent;
+        }
+      } catch (templateError) {
+        console.error("Error applying template:", templateError);
+        console.log("Keeping AI-generated content without template formatting");
+      }
     }
     
+    // Update progress
+    await storage.updateProcessing(processingId, { progress: 80 });
+    
     // Save tailored content
-    tailoredFileName = `tailored-${Date.now()}-${document.fileName}`;
-    tailoredFilePath = path.join(uploadsDir, tailoredFileName);
+    const tailoredFileName = `tailored-${Date.now()}-${document.fileName}`;
+    const tailoredFilePath = path.join(uploadsDir, tailoredFileName);
     fs.writeFileSync(tailoredFilePath, tailoredContent);
     
     // Update progress
