@@ -8,7 +8,6 @@ import JobDetails from "@/components/steps/JobDetails";
 import Processing from "@/components/steps/Processing";
 import Results from "@/components/steps/Results";
 import TextInputForm from "@/components/steps/TextInputForm";
-import TemplateSelector, { Template } from "@/components/steps/TemplateSelector";
 import { DocumentType } from "@/lib/types";
 import { Sparkles, FileText, Clock } from "lucide-react";
 
@@ -17,18 +16,12 @@ export default function Home() {
   const [documentId, setDocumentId] = useState<number | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [documentType, setDocumentType] = useState<DocumentType>("cv");
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
 
   const handleTextInputComplete = (id: number, name: string, type: DocumentType) => {
     setDocumentId(id);
     setFileName(name);
     setDocumentType(type);
-    // Skip template selection step - go directly to job details
-    setStep(3);
-  };
-
-  const handleTemplateSelected = (template: Template) => {
-    setSelectedTemplate(template);
+    // Go directly to job details
     setStep(3);
   };
 
@@ -46,7 +39,6 @@ export default function Home() {
     setDocumentId(null);
     setFileName("");
     setDocumentType("cv");
-    setSelectedTemplate(null);
   };
 
   return (
@@ -66,22 +58,18 @@ export default function Home() {
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Step Progress Indicator */}
           <div className="bg-gray-50 px-6 py-4 border-b">
-            <div className="flex items-center justify-between max-w-4xl mx-auto">
+            <div className="flex items-center justify-between max-w-3xl mx-auto">
               <StepIndicator step={1} currentStep={step} label="Document" />
               
-              <div className={`w-12 h-0.5 ${step >= 2 ? "bg-primary" : "bg-gray-200"}`}></div>
-              
-              <StepIndicator step={2} currentStep={step} label="Template" />
-              
-              <div className={`w-12 h-0.5 ${step >= 3 ? "bg-primary" : "bg-gray-200"}`}></div>
+              <div className={`w-16 h-0.5 ${step >= 3 ? "bg-primary" : "bg-gray-200"}`}></div>
               
               <StepIndicator step={3} currentStep={step} label="Job Details" />
               
-              <div className={`w-12 h-0.5 ${step >= 4 ? "bg-primary" : "bg-gray-200"}`}></div>
+              <div className={`w-16 h-0.5 ${step >= 4 ? "bg-primary" : "bg-gray-200"}`}></div>
               
               <StepIndicator step={4} currentStep={step} label="Processing" />
               
-              <div className={`w-12 h-0.5 ${step >= 5 ? "bg-primary" : "bg-gray-200"}`}></div>
+              <div className={`w-16 h-0.5 ${step >= 5 ? "bg-primary" : "bg-gray-200"}`}></div>
               
               <StepIndicator step={5} currentStep={step} label="Results" />
             </div>
@@ -93,13 +81,7 @@ export default function Home() {
               <TextInputForm onComplete={handleTextInputComplete} />
             )}
 
-            {step === 2 && documentId && (
-              <TemplateSelector 
-                documentType={documentType}
-                onSelectTemplate={handleTemplateSelected}
-                onBack={() => setStep(1)}
-              />
-            )}
+            {/* Template step removed */}
 
             {step === 3 && documentId && (
               <JobDetails 
