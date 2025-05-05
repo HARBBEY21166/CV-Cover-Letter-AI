@@ -2,7 +2,8 @@ import {
   users, type User, type InsertUser,
   documents, type Document, type InsertDocument,
   jobs, type Job, type InsertJob,
-  processing, type Processing, type InsertProcessing
+  processing, type Processing, type InsertProcessing,
+  templates, type Template, type InsertTemplate
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -29,6 +30,13 @@ export interface IStorage {
   getProcessingByDocument(documentId: number): Promise<Processing | undefined>;
   createProcessing(processing: InsertProcessing): Promise<Processing>;
   updateProcessing(id: number, updates: Partial<Processing>): Promise<Processing | undefined>;
+
+  // Template methods
+  getTemplate(id: number): Promise<Template | undefined>;
+  getTemplates(documentType?: string): Promise<Template[]>;
+  createTemplate(template: InsertTemplate): Promise<Template>;
+  updateTemplate(id: number, updates: Partial<Template>): Promise<Template | undefined>;
+  deleteTemplate(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -114,6 +122,37 @@ export class DatabaseStorage implements IStorage {
       .where(eq(processing.id, id))
       .returning();
     return result[0];
+  }
+
+  // Template methods
+  async getTemplate(id: number): Promise<Template | undefined> {
+    const result = await db.select().from(templates).where(eq(templates.id, id));
+    return result[0];
+  }
+
+  async getTemplates(documentType?: string): Promise<Template[]> {
+    if (documentType) {
+      return db.select().from(templates).where(eq(templates.documentType, documentType));
+    }
+    return db.select().from(templates);
+  }
+
+  async createTemplate(insertTemplate: InsertTemplate): Promise<Template> {
+    const result = await db.insert(templates).values(insertTemplate).returning();
+    return result[0];
+  }
+
+  async updateTemplate(id: number, updates: Partial<InsertTemplate>): Promise<Template | undefined> {
+    const result = await db
+      .update(templates)
+      .set(updates)
+      .where(eq(templates.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteTemplate(id: number): Promise<void> {
+    await db.delete(templates).where(eq(templates.id, id));
   }
 }
 

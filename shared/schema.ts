@@ -60,6 +60,8 @@ export const processing = pgTable("processing", {
   documentId: integer("document_id").notNull().references(() => documents.id),
   progress: integer("progress").notNull().default(0),
   status: text("status").notNull().default("pending"), // pending, processing, completed, failed
+  matchScore: integer("match_score"), // Score from 0-100 indicating job match percentage
+  matchDetails: jsonb("match_details"), // JSON with detailed scoring breakdown
   errorMessage: text("error_message"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -93,6 +95,23 @@ export const jobsRelations = relations(jobs, ({ one }) => ({
   }),
 }));
 
+// Templates for CV and Cover Letter styles
+export const templates = pgTable("templates", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  documentType: text("document_type").notNull(), // cv, cover
+  content: text("content").notNull(), // Template content with placeholders
+  previewImageUrl: text("preview_image_url"),
+  isDefault: boolean("is_default").default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertTemplateSchema = createInsertSchema(templates).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const processingRelations = relations(processing, ({ one }) => ({
   document: one(documents, {
     fields: [processing.documentId],
@@ -112,3 +131,6 @@ export type Job = typeof jobs.$inferSelect;
 
 export type InsertProcessing = z.infer<typeof insertProcessingSchema>;
 export type Processing = typeof processing.$inferSelect;
+
+export type InsertTemplate = z.infer<typeof insertTemplateSchema>;
+export type Template = typeof templates.$inferSelect;

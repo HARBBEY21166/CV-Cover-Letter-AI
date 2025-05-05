@@ -8,8 +8,10 @@ import fs from "fs";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import {
   insertDocumentSchema,
-  insertJobSchema,
+  insertJobSchema, 
   insertProcessingSchema,
+  insertTemplateSchema,
+  templates,
 } from "@shared/schema";
 
 // Create uploads directory if it doesn't exist
@@ -361,6 +363,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("View error:", error);
       res.status(500).json({ message: "Failed to view document" });
+    }
+  });
+
+  // Templates endpoints
+  // Get all templates
+  apiRouter.get("/templates", async (req, res) => {
+    try {
+      const { documentType } = req.query;
+      
+      // Get all templates, filtered by document type if provided
+      const allTemplates = await storage.getTemplates(documentType as string);
+      
+      res.json(allTemplates);
+    } catch (error) {
+      console.error("Templates retrieval error:", error);
+      res.status(500).json({ message: "Failed to get templates" });
+    }
+  });
+
+  // Get template by ID
+  apiRouter.get("/templates/:id", async (req, res) => {
+    try {
+      const templateId = parseInt(req.params.id);
+      
+      // Get template
+      const template = await storage.getTemplate(templateId);
+      if (!template) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+      
+      res.json(template);
+    } catch (error) {
+      console.error("Template retrieval error:", error);
+      res.status(500).json({ message: "Failed to get template" });
+    }
+  });
+
+  // Create new template
+  apiRouter.post("/templates", async (req, res) => {
+    try {
+      // Validate template data
+      const templateData = insertTemplateSchema.parse(req.body);
+      
+      // Create template
+      const template = await storage.createTemplate(templateData);
+      
+      res.status(201).json(template);
+    } catch (error) {
+      console.error("Template creation error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid template data", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to create template" });
+    }
+  });
+
+  // Update template
+  apiRouter.put("/templates/:id", async (req, res) => {
+    try {
+      const templateId = parseInt(req.params.id);
+      
+      // Validate template data
+      const templateData = insertTemplateSchema.parse(req.body);
+      
+      // Update template
+      const updatedTemplate = await storage.updateTemplate(templateId, templateData);
+      if (!updatedTemplate) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+      
+      res.json(updatedTemplate);
+    } catch (error) {
+      console.error("Template update error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid template data", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to update template" });
+    }
+  });
+
+  // Delete template
+  apiRouter.delete("/templates/:id", async (req, res) => {
+    try {
+      const templateId = parseInt(req.params.id);
+      
+      // Delete template
+      await storage.deleteTemplate(templateId);
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Template deletion error:", error);
+      res.status(500).json({ message: "Failed to delete template" });
     }
   });
 
