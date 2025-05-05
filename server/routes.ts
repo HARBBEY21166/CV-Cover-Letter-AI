@@ -324,7 +324,27 @@ async function processDocument(documentId: number, jobId: number, processingId: 
     });
     
     // Extract content from document
-    const content = document.originalContent;
+    let content = "";
+    if (document.originalContent) {
+      // Use existing content if available
+      content = document.originalContent;
+    } else if (document.originalFilePath && fs.existsSync(document.originalFilePath)) {
+      // Try to extract content from file if path exists
+      if (document.fileType === "pdf") {
+        // For PDFs, we'll need to either:
+        // 1. Have the user manually enter the content for now
+        // 2. Implement PDF text extraction (needs additional libraries)
+        content = "PDF content extraction not supported. Please enter content manually.";
+      } else if (document.fileType === "docx") {
+        // For DOCX, we would use the docx library to extract text
+        // This is just a placeholder - would need actual implementation
+        content = "DOCX content extraction would be implemented here.";
+      }
+    }
+    
+    if (!content) {
+      throw new Error("Could not extract content from document");
+    }
     
     // Update progress
     await storage.updateProcessing(processingId, { progress: 30 });
@@ -354,12 +374,20 @@ async function processDocument(documentId: number, jobId: number, processingId: 
     const result = await model.generateContent(prompt);
     const tailoredContent = result.response.text();
     
+    // Save tailored content
+    const tailoredFileName = `tailored-${Date.now()}-${document.fileName}`;
+    const tailoredFilePath = path.join(uploadsDir, tailoredFileName);
+    
+    // Write tailored content to a file
+    fs.writeFileSync(tailoredFilePath, tailoredContent);
+    
     // Update progress
     await storage.updateProcessing(processingId, { progress: 75 });
     
-    // Update document with tailored content
+    // Update document with tailored content and file path
     await storage.updateDocument(documentId, {
       tailoredContent,
+      tailoredFilePath,
       status: "completed",
     });
     
