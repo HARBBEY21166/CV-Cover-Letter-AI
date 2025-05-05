@@ -4,40 +4,23 @@ import Footer from "@/components/ui/Footer";
 import StepIndicator from "@/components/ui/StepIndicator";
 import FeatureCard from "@/components/ui/FeatureCard";
 import TestimonialCard from "@/components/ui/TestimonialCard";
-import UploadDocument from "@/components/steps/UploadDocument";
 import JobDetails from "@/components/steps/JobDetails";
 import Processing from "@/components/steps/Processing";
 import Results from "@/components/steps/Results";
-import ManualTextEntry from "@/components/steps/ManualTextEntry";
+import TextInputForm from "@/components/steps/TextInputForm";
 import { DocumentType } from "@/lib/types";
 import { Sparkles, FileText, Clock } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
   const [step, setStep] = useState(1);
   const [documentId, setDocumentId] = useState<number | null>(null);
   const [fileName, setFileName] = useState<string>("");
-  const [fileType, setFileType] = useState<string>("");
   const [documentType, setDocumentType] = useState<DocumentType>("cv");
-  const [needsManualEntry, setNeedsManualEntry] = useState(false);
 
-  const handleUploadComplete = (id: number, name: string, type: DocumentType, fileExt: string) => {
+  const handleTextInputComplete = (id: number, name: string, type: DocumentType) => {
     setDocumentId(id);
     setFileName(name);
     setDocumentType(type);
-    setFileType(fileExt);
-    
-    // If the file is a PDF, we need manual text entry
-    if (fileExt === "pdf") {
-      setNeedsManualEntry(true);
-      setStep(1.5); // Using 1.5 to represent a step between 1 and 2
-    } else {
-      setNeedsManualEntry(false);
-      setStep(2);
-    }
-  };
-
-  const handleManualEntryComplete = () => {
     setStep(2);
   };
 
@@ -54,8 +37,7 @@ export default function Home() {
     setStep(1);
     setDocumentId(null);
     setFileName("");
-    setFileType("");
-    setNeedsManualEntry(false);
+    setDocumentType("cv");
   };
 
   return (
@@ -67,7 +49,7 @@ export default function Home() {
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-gray-900 mb-3">Tailor Your CV & Cover Letter with AI</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Upload your documents and job description - our AI will customize your application to match the role perfectly while preserving your original formatting.
+            Enter your document content and job description - our AI will customize your application to match the role perfectly.
           </p>
         </div>
 
@@ -76,7 +58,7 @@ export default function Home() {
           {/* Step Progress Indicator */}
           <div className="bg-gray-50 px-6 py-4 border-b">
             <div className="flex items-center justify-between max-w-3xl mx-auto">
-              <StepIndicator step={1} currentStep={step} label="Upload" />
+              <StepIndicator step={1} currentStep={step} label="Document" />
               
               <div className={`w-16 h-0.5 ${step >= 2 ? "bg-primary" : "bg-gray-200"}`}></div>
               
@@ -95,22 +77,13 @@ export default function Home() {
           {/* Step Content Container */}
           <div className="p-6">
             {step === 1 && (
-              <UploadDocument onComplete={handleUploadComplete} />
-            )}
-            
-            {step === 1.5 && documentId && (
-              <ManualTextEntry 
-                documentId={documentId}
-                fileName={fileName}
-                onBack={() => setStep(1)}
-                onComplete={handleManualEntryComplete}
-              />
+              <TextInputForm onComplete={handleTextInputComplete} />
             )}
 
             {step === 2 && documentId && (
               <JobDetails 
                 documentId={documentId} 
-                onBack={() => needsManualEntry ? setStep(1.5) : setStep(1)} 
+                onBack={() => setStep(1)} 
                 onComplete={handleJobDetailsComplete} 
               />
             )}
@@ -138,14 +111,14 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <FeatureCard
               icon={Sparkles}
-              title="AI-Powered Rewriting"
-              description="Our AI uses Google Gemini to intelligently rewrite your documents to match job requirements."
+              title="AI-Powered Tailoring"
+              description="Our AI uses Google Gemini to intelligently rewrite your documents to match specific job requirements."
             />
             
             <FeatureCard
               icon={FileText}
-              title="Format Preservation"
-              description="Keep your original document's formatting intact while the content is optimized."
+              title="Custom Cover Letters"
+              description="Generate perfectly tailored cover letters based on your resume and job descriptions."
             />
             
             <FeatureCard
@@ -171,7 +144,7 @@ export default function Home() {
             <TestimonialCard
               name="Michael T."
               role="Marketing Specialist"
-              quote="This saved me hours of tweaking my cover letter for each application. The formatting stayed perfect and the content was spot-on."
+              quote="This saved me hours of tweaking my cover letter for each application. The content was spot-on and matched exactly what the job required."
               imageUrl=""
             />
           </div>
