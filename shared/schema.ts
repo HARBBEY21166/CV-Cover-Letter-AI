@@ -1,6 +1,7 @@
-import { pgTable, text, serial, integer, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 // User schema - kept from original
 export const users = pgTable("users", {
@@ -17,7 +18,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
 // Document schema for uploaded files
 export const documents = pgTable("documents", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id"),
+  userId: integer("user_id").references(() => users.id),
   fileName: text("file_name").notNull(),
   fileType: text("file_type").notNull(), // docx, pdf, gdoc
   documentType: text("document_type").notNull(), // cv, cover
@@ -27,7 +28,7 @@ export const documents = pgTable("documents", {
   company: text("company"),
   jobDescription: text("job_description"),
   status: text("status").notNull().default("pending"), // pending, processing, completed
-  createdAt: text("created_at").notNull().default("NOW()"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const insertDocumentSchema = createInsertSchema(documents).omit({
@@ -43,7 +44,7 @@ export const jobs = pgTable("jobs", {
   title: text("title").notNull(),
   company: text("company").notNull(),
   description: text("description").notNull(),
-  documentId: integer("document_id").notNull(),
+  documentId: integer("document_id").notNull().references(() => documents.id),
 });
 
 export const insertJobSchema = createInsertSchema(jobs).omit({
@@ -53,10 +54,11 @@ export const insertJobSchema = createInsertSchema(jobs).omit({
 // Processing schema for tracking document processing
 export const processing = pgTable("processing", {
   id: serial("id").primaryKey(),
-  documentId: integer("document_id").notNull(),
+  documentId: integer("document_id").notNull().references(() => documents.id),
   progress: integer("progress").notNull().default(0),
   status: text("status").notNull().default("pending"), // pending, processing, completed, failed
   errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const insertProcessingSchema = createInsertSchema(processing).omit({
@@ -64,7 +66,36 @@ export const insertProcessingSchema = createInsertSchema(processing).omit({
   progress: true,
   status: true,
   errorMessage: true,
+  createdAt: true,
 });
+
+// Define relations after all tables are defined
+export const usersRelations = relations(users, ({ many }) => ({
+  documents: many(documents),
+}));
+
+export const documentsRelations = relations(documents, ({ one, many }) => ({
+  user: one(users, {
+    fields: [documents.userId],
+    references: [users.id],
+  }),
+  job: many(jobs),
+  processing: many(processing),
+}));
+
+export const jobsRelations = relations(jobs, ({ one }) => ({
+  document: one(documents, {
+    fields: [jobs.documentId],
+    references: [documents.id],
+  }),
+}));
+
+export const processingRelations = relations(processing, ({ one }) => ({
+  document: one(documents, {
+    fields: [processing.documentId],
+    references: [documents.id],
+  }),
+}));
 
 // Type definitions
 export type InsertUser = z.infer<typeof insertUserSchema>;
