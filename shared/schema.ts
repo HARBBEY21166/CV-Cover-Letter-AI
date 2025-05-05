@@ -15,6 +15,23 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
 });
 
+// Templates for CV and Cover Letter styles
+export const templates = pgTable("templates", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  documentType: text("document_type").notNull(), // cv, cover
+  content: text("content").notNull(), // Template content with placeholders
+  previewImageUrl: text("preview_image_url"),
+  isDefault: boolean("is_default").default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertTemplateSchema = createInsertSchema(templates).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Document schema for uploaded files
 export const documents = pgTable("documents", {
   id: serial("id").primaryKey(),
@@ -29,6 +46,7 @@ export const documents = pgTable("documents", {
   jobTitle: text("job_title"),
   company: text("company"),
   jobDescription: text("job_description"),
+  templateId: integer("template_id").references(() => templates.id),
   status: text("status").notNull().default("pending"), // pending, processing, completed
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -84,6 +102,10 @@ export const documentsRelations = relations(documents, ({ one, many }) => ({
     fields: [documents.userId],
     references: [users.id],
   }),
+  template: one(templates, {
+    fields: [documents.templateId],
+    references: [templates.id],
+  }),
   job: many(jobs),
   processing: many(processing),
 }));
@@ -94,23 +116,6 @@ export const jobsRelations = relations(jobs, ({ one }) => ({
     references: [documents.id],
   }),
 }));
-
-// Templates for CV and Cover Letter styles
-export const templates = pgTable("templates", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  documentType: text("document_type").notNull(), // cv, cover
-  content: text("content").notNull(), // Template content with placeholders
-  previewImageUrl: text("preview_image_url"),
-  isDefault: boolean("is_default").default(false),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
-export const insertTemplateSchema = createInsertSchema(templates).omit({
-  id: true,
-  createdAt: true,
-});
 
 export const processingRelations = relations(processing, ({ one }) => ({
   document: one(documents, {

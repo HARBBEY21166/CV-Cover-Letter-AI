@@ -104,11 +104,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const documentId = parseInt(req.params.id);
       
-      // Validate job details
+      // Validate job details and template
       const jobSchema = z.object({
         title: z.string().min(1),
         company: z.string().min(1),
         description: z.string().min(10),
+        templateId: z.number().optional(),
       });
       
       const jobData = jobSchema.parse(req.body);
@@ -132,13 +133,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         documentId,
       });
       
-      // Update document with job info
-      await storage.updateDocument(documentId, {
+      // Update document with job info and template ID if provided
+      const updateData: Partial<Document> = {
         jobTitle: jobData.title,
         company: jobData.company,
         jobDescription: jobData.description,
         status: "processing",
-      });
+      };
+      
+      if (jobData.templateId) {
+        updateData.templateId = jobData.templateId;
+      }
+      
+      await storage.updateDocument(documentId, updateData);
       
       // Start processing document (async)
       processDocument(documentId, job.id, processing.id);
@@ -475,6 +482,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   return httpServer;
 }
+
+import { applyTemplate } from "./template-utils";
 
 // Helper function to process document using Gemini API
 async function processDocument(documentId: number, jobId: number, processingId: number) {
