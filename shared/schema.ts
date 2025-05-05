@@ -22,7 +22,9 @@ export const documents = pgTable("documents", {
   fileName: text("file_name").notNull(),
   fileType: text("file_type").notNull(), // docx, pdf, gdoc
   documentType: text("document_type").notNull(), // cv, cover
-  originalContent: text("original_content").notNull(),
+  originalFilePath: text("original_file_path").notNull(),
+  tailoredFilePath: text("tailored_file_path"),
+  originalContent: text("original_content"),
   tailoredContent: text("tailored_content"),
   jobTitle: text("job_title"),
   company: text("company"),
@@ -34,6 +36,7 @@ export const documents = pgTable("documents", {
 export const insertDocumentSchema = createInsertSchema(documents).omit({
   id: true,
   tailoredContent: true,
+  tailoredFilePath: true,
   status: true,
   createdAt: true,
 });

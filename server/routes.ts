@@ -12,9 +12,24 @@ import {
   insertProcessingSchema,
 } from "@shared/schema";
 
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Configure multer storage
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, uploadsDir);
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const ext = path.extname(file.originalname);
+      cb(null, uniqueSuffix + ext);
+    }
+  }),
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
@@ -46,14 +61,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Extract content as text for now (actual parsing would use docx.js)
-      const originalContent = req.file.buffer.toString("utf-8");
+      // Store file path instead of content
+      const originalFilePath = req.file.path;
 
-      // Save document to storage
+      // Extract content for text-based files if needed
+      let originalContent = null;
+      if (fileType === "docx") {
+        try {
+          // For docx files, we'll implement proper parsing later
+          // For now, leave as null
+        } catch (err) {
+          console.error("Failed to extract content from DOCX:", err);
+        }
+      }
+
+      // Save document to storage with file path instead of content
       const document = await storage.createDocument({
         fileName,
         fileType,
         documentType,
+        originalFilePath,
         originalContent,
         userId: null,
       });
