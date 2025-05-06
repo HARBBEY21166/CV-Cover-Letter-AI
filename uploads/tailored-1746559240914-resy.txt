@@ -1,0 +1,77 @@
+=== TAILORED CV/RESUME ===
+
+Abbey Aina
+Creative Web Designer
+portfolio: abbeylii.com
+location: whitney road, bramley view, johannesburg, south africa
+• Linkedin: https://www.linkedin.com/in/abbey0
+• Github: https://github.com/HARBBEY21166
+• Email: olamilekansunday445@gmail.com
+• Phone: +27 84 317 1229
+
+Summary
+Innovative and detail-oriented Creative Web Designer with over two years of experience designing and developing dynamic and responsive websites. Passionate about clean code, user-centered design principles, and delivering visually appealing digital experiences that align with brand concepts. Proven track record of translating creative ideas into functional and aesthetically pleasing web solutions.
+
+Technical Skills
+Languages: HTML, CSS (inline and traditional), JavaScript
+Frameworks & Libraries: React.js, Bootstrap
+Tools & Platforms: Adobe Creative Suite, Figma, Sketch, GitHub, Netlify, WordPress (Bitnami, VirtualBox), InfinityFree
+Additional Skills: Responsive Design, Cross-browser compatibility, Version control, UI/UX principles, Wireframing, Prototyping, Graphic Design
+
+Experience
+Front-end Developer
+Freelance | Gig-at-a-Startup | October 2024 - November 2024
+• Developed the WanderUnion project, ensuring seamless UI/UX and mobile responsiveness, resulting in a visually appealing and user-friendly website.
+• Collaborated closely with clients to refine designs, address feedback, and create functional web solutions that met their business objectives.
+• Optimized website performance and usability, contributing to client satisfaction and retention through improved design effectiveness.
+
+Intern Web Developer
+GAO Tek | Remote Internship | May 2024 – November 2024
+• Built and managed WordPress sites using Bitnami and VirtualBox environments, focusing on aesthetically pleasing designs.
+• Implemented SEO best practices and performance optimizations.
+• Gained hands-on experience in WordPress theme customization and plugin integration to enhance the user experience.
+
+Education
+ALX Front-end Development Program | Graduated October 30, 2024
+• Focused on JavaScript, responsive web design techniques, and real-world project management.
+• Completed capstone projects including interactive web applications and dynamic landing pages.
+
+Projects
+Responsive Navigation Menu | Deployed on Netlify
+• Designed and coded a fully responsive navigation system, enhancing user experience across devices.
+Currency Converter Web App | Personal Project
+• Built a dynamic web application to provide real-time currency conversion with a clean, intuitive interface.
+
+Certifications
+Front-end Development Certification – freeCodeCamp
+Front-end Web Development Certification – Alx_Africa
+
+Languages
+English (Fluent)
+
+Interests
+Web development trends, UI/UX design, Gaming
+
+
+
+=== COVER LETTER ===
+
+Abbey Aina
+olamilekansunday445@gmail.com
+May 6, 2025
+
+Remote Recruitment Talent Acquisition Team
+Remote Recruitment
+
+Dear Hiring Manager,
+
+I am writing to express my enthusiastic interest in the Creative Web Designer position at Remote Recruitment. As a Front-end Web Developer with over two years of experience in crafting dynamic and responsive websites, I am confident that my skills and passion for creating visually stunning and user-friendly online experiences align perfectly with your requirements. I am eager to contribute my expertise to your team and help your clients achieve their business objectives through captivating web interfaces.
+
+My experience freelancing and interning has equipped me with a strong understanding of the entire web design process, from initial concept to final execution. At Gig-at-a-Startup, I developed and delivered the WanderUnion project, focusing on a seamless UI/UX and ensuring mobile responsiveness. This involved close collaboration with clients to refine designs and address feedback, mirroring the collaborative environment described in your job description. My internship at GAO Tek provided valuable experience in WordPress customization and SEO best practices, further enhancing my ability to create effective and optimized websites.
+
+I possess a robust skillset in key design tools and technologies, including proficiency in HTML, CSS, JavaScript, React.js, and Bootstrap. I am also experienced with design tools and platforms such as GitHub, Netlify, and WordPress. My ALX Front-end Development Program emphasized responsive web design and real-world project management, allowing me to create interactive web applications and dynamic landing pages. This background, coupled with my understanding of user-centered design and usability principles, enables me to translate brand concepts into aesthetically pleasing and highly functional web experiences.
+
+Thank you for considering my application. I am excited about the opportunity to discuss how my skills and experience can contribute to Remote Recruitment's success. I have attached my resume for your review and look forward to hearing from you soon.
+
+Best regards,
+Abbey Aina
