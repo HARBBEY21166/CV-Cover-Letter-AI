@@ -1,4 +1,4 @@
-export type DocumentType = "cv" | "cover";
+export type DocumentType = "cv" | "cover" | "both";
 export type FileType = "docx" | "pdf" | "gdoc";
 export type ProcessingStatus = "pending" | "processing" | "completed" | "failed";
 

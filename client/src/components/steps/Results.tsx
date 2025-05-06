@@ -138,7 +138,7 @@ export default function Results({ documentId, onReset }: ResultsProps) {
                   <div className="space-y-4">
                     <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mb-4">
                       <h4 className="font-medium text-amber-800 mb-2">Tailored Content Preview</h4>
-                      <p className="text-amber-700 text-sm">PDF documents can't be modified directly, but we've generated tailored content for you below:</p>
+                      <p className="text-amber-700 text-sm">Yo we've generated tailored content for you below:</p>
                     </div>
                     
                     <div className="border border-gray-200 rounded-md p-4 bg-white">
@@ -166,8 +166,8 @@ export default function Results({ documentId, onReset }: ResultsProps) {
                     <div className="text-center mt-4">
                       <p className="text-sm text-gray-500 mb-2">Download the tailored document:</p>
                       <div className="flex gap-2 justify-center">
-                        <Button onClick={() => handleDownload("docx")} size="sm">DOCX</Button>
-                        <Button onClick={() => handleDownload("pdf")} size="sm" variant="outline">PDF</Button>
+                        <Button onClick={() => handleDownload("docx")} size="sm">Txt</Button>
+                        
                       </div>
                     </div>
                   </div>
@@ -307,15 +307,6 @@ export default function Results({ documentId, onReset }: ResultsProps) {
               >
                 <File className="h-4 w-4" />
                 Download as PDF
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                className="w-full flex items-center justify-center gap-2"
-                onClick={() => handleDownload("gdoc")}
-              >
-                <FileIcon className="h-4 w-4" />
-                Save to Google Docs
               </Button>
             </div>
             

@@ -41,31 +41,59 @@ export default function TextInputForm({ onComplete }: TextInputFormProps) {
     setSaving(true);
 
     try {
-      // Instead of uploading a file, we'll create a document directly with the content
-      const response = await fetch("/api/documents/create-from-text", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content,
-          fileName: fileName + ".txt",
-          documentType,
-        }),
-        credentials: "include",
-      });
+      if (documentType === "both") {
+        // For "both" option, we create a single document with type "both"
+        const response = await fetch("/api/documents/create-from-text", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content,
+            fileName: fileName + ".txt",
+            documentType: "both",
+          }),
+          credentials: "include",
+        });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to create document");
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to create document");
+        }
+
+        const data = await response.json();
+        toast({
+          title: "Content saved",
+          description: "Your document has been created successfully. We'll generate both CV and cover letter.",
+        });
+        onComplete(data.id, data.fileName, "both");
+      } else {
+        // For single document types (cv or cover)
+        const response = await fetch("/api/documents/create-from-text", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content,
+            fileName: fileName + ".txt",
+            documentType,
+          }),
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || "Failed to create document");
+        }
+
+        const data = await response.json();
+        toast({
+          title: "Content saved",
+          description: "Your document has been created successfully",
+        });
+        onComplete(data.id, data.fileName, documentType);
       }
-
-      const data = await response.json();
-      toast({
-        title: "Content saved",
-        description: "Your document has been created successfully",
-      });
-      onComplete(data.id, data.fileName, documentType);
     } catch (error) {
       toast({
         title: "Failed to save content",
@@ -99,7 +127,7 @@ export default function TextInputForm({ onComplete }: TextInputFormProps) {
           <RadioGroup
             value={documentType}
             onValueChange={(value) => setDocumentType(value as DocumentType)}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4"
           >
             <div className="border rounded-lg p-4 flex items-center cursor-pointer hover:bg-gray-50">
               <RadioGroupItem value="cv" id="cv" className="mr-3" />
@@ -116,19 +144,31 @@ export default function TextInputForm({ onComplete }: TextInputFormProps) {
                 <span className="block text-xs text-gray-500 mt-1">Generate a cover letter from your resume</span>
               </Label>
             </div>
+            
+            <div className="border rounded-lg p-4 flex items-center cursor-pointer hover:bg-gray-50">
+              <RadioGroupItem value="both" id="both" className="mr-3" />
+              <Label htmlFor="both" className="cursor-pointer flex-1">
+                <span className="block text-sm font-medium text-gray-700">Both</span>
+                <span className="block text-xs text-gray-500 mt-1">Generate both CV and cover letter</span>
+              </Label>
+            </div>
           </RadioGroup>
 
           <Label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
             {documentType === "cv" 
               ? "Paste your resume/CV content here" 
-              : "Paste your resume content to generate a matching cover letter"}
+              : documentType === "cover"
+                ? "Paste your resume content to generate a matching cover letter"
+                : "Paste your resume content to generate both a tailored CV and matching cover letter"}
           </Label>
           <Textarea
             id="content"
             className="min-h-[300px] mb-4 font-mono text-sm"
             placeholder={documentType === "cv" 
               ? "Paste your resume or CV content here..." 
-              : "Paste your resume content here and we'll generate a matching cover letter..."}
+              : documentType === "cover"
+                ? "Paste your resume content here and we'll generate a matching cover letter..."
+                : "Paste your resume content here and we'll generate both a tailored CV and matching cover letter..."}
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
