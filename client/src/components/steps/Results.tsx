@@ -138,7 +138,7 @@ export default function Results({ documentId, onReset }: ResultsProps) {
                   <div className="space-y-4">
                     <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mb-4">
                       <h4 className="font-medium text-amber-800 mb-2">Tailored Content Preview</h4>
-                      <p className="text-amber-700 text-sm">Yo we've generated tailored content for you below:</p>
+                      <p className="text-amber-700 text-sm">We've generated tailored content for you below:</p>
                     </div>
                     
                     <div className="border border-gray-200 rounded-md p-4 bg-white">
@@ -150,6 +150,43 @@ export default function Results({ documentId, onReset }: ResultsProps) {
                       <Button onClick={() => handleDownload("pdf")} size="sm">
                         Download Tailored Content
                       </Button>
+                    </div>
+                  </div>
+                ) : document.documentType === 'both' ? (
+                  <div className="space-y-4">
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-md p-4 mb-4">
+                      <h4 className="font-medium text-blue-800 mb-2">CV and Cover Letter</h4>
+                      <p className="text-blue-700 text-sm">We've generated both a tailored CV and a matching cover letter:</p>
+                    </div>
+                    
+                    {document.tailoredContent && document.tailoredContent.includes("=== TAILORED CV/RESUME ===") ? (
+                      <div>
+                        {document.tailoredContent.split("=== TAILORED CV/RESUME ===")[1]
+                          .split("=== COVER LETTER ===")
+                          .map((content, index) => (
+                            <div key={index} className="mb-6">
+                              <div className="bg-white border border-gray-200 rounded-md p-4 mb-2">
+                                <h5 className="font-medium text-gray-800 mb-2">
+                                  {index === 0 ? "Tailored CV/Resume" : "Cover Letter"}
+                                </h5>
+                                <pre className="whitespace-pre-wrap text-sm font-serif">{content.trim()}</pre>
+                              </div>
+                            </div>
+                          ))
+                        }
+                      </div>
+                    ) : (
+                      <div className="border border-gray-200 rounded-md p-4 bg-white">
+                        <pre className="whitespace-pre-wrap text-sm font-serif">{document.tailoredContent || "No tailored content available."}</pre>
+                      </div>
+                    )}
+                    
+                    <div className="text-center mt-4">
+                      <p className="text-sm text-gray-500 mb-2">Download your documents:</p>
+                      <div className="flex gap-2 justify-center">
+                        <Button onClick={() => handleDownload("docx")} size="sm">DOCX</Button>
+                        <Button onClick={() => handleDownload("pdf")} size="sm">PDF</Button>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -166,8 +203,8 @@ export default function Results({ documentId, onReset }: ResultsProps) {
                     <div className="text-center mt-4">
                       <p className="text-sm text-gray-500 mb-2">Download the tailored document:</p>
                       <div className="flex gap-2 justify-center">
-                        <Button onClick={() => handleDownload("docx")} size="sm">Txt</Button>
-                        
+                        <Button onClick={() => handleDownload("docx")} size="sm">DOCX</Button>
+                        <Button onClick={() => handleDownload("pdf")} size="sm">PDF</Button>
                       </div>
                     </div>
                   </div>

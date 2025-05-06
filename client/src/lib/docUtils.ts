@@ -75,6 +75,8 @@ export function getDocumentTypeLabel(type: string): string {
       return 'CV / Resume';
     case 'cover':
       return 'Cover Letter';
+    case 'both':
+      return 'CV & Cover Letter';
     default:
       return 'Document';
   }
