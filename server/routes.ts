@@ -549,8 +549,94 @@ async function processDocument(documentId: number, jobId: number, processingId: 
     await storage.updateProcessing(processingId, { progress: 30 });
     
     // Use Gemini to tailor the content - with requested format
-    // Prepare prompt for Gemini
-    const prompt = `
+    // Handle "both" document type or just a single document type
+    let tailoredContent = "";
+
+    if (document.documentType === 'both') {
+      // For "both" we'll generate two separate documents
+      
+      // First, generate the tailored CV
+      const cvPrompt = `
+You are a professional document tailoring assistant with expertise in helping job applicants match their experience to specific job requirements.
+
+TASK:
+Update this CV/Resume tailored specifically for the job opening below.
+
+JOB DETAILS:
+- Title: ${job.title}
+- Company: ${job.company}
+- Description: ${job.description}
+
+ORIGINAL DOCUMENT CONTENT:
+${content}
+
+INSTRUCTIONS:
+1. Analyze my CV/resume and the job description to identify alignment between my skills and the job requirements.
+2. Update my CV content to emphasize relevant skills, experiences, and achievements that match this specific job.
+3. Use relevant keywords from the job description naturally throughout the CV.
+4. Preserve the original sections and structure where possible (e.g., Education, Experience, Skills).
+5. Make sure to adjust bullet points to highlight accomplishments that relate to this position.
+6. Only include information from my original document - do not invent new experiences or skills.
+7. Prioritize updating the most relevant parts of my CV that match the position requirements.
+
+IMPORTANT FORMATTING:
+1. Output format: Return ONLY the updated CV/Resume.
+2. DO NOT include any explanations, headers like "UPDATED CONTENT:", or notes.
+3. Make sure this is a properly formatted resume/CV.
+`;
+
+      // Update progress
+      await storage.updateProcessing(processingId, { progress: 40 });
+      
+      // Call Gemini API to generate the CV
+      const cvResult = await model.generateContent(cvPrompt);
+      const tailoredCV = cvResult.response.text();
+      console.log("Generated CV content from AI, length:", tailoredCV.length);
+
+      // Then generate the cover letter
+      const coverLetterPrompt = `
+You are a professional document tailoring assistant with expertise in helping job applicants match their experience to specific job requirements.
+
+TASK:
+Create a professional cover letter based on this resume for the specific job opening below.
+
+JOB DETAILS:
+- Title: ${job.title}
+- Company: ${job.company}
+- Description: ${job.description}
+
+ORIGINAL DOCUMENT CONTENT:
+${content}
+
+INSTRUCTIONS:
+1. Start with a title in the format: "Cover letter for ${job.company}: ${job.title}"
+2. Create a professional cover letter addressed to the hiring manager at ${job.company} for the ${job.title} position.
+3. Use relevant keywords from the job description in a natural way.
+4. Structure the letter with: formal header, introduction explaining my interest, 1-2 paragraphs highlighting relevant experiences/skills from my resume, and a conclusion.
+5. Keep the tone professional but engaging.
+6. Use information from my resume to highlight my qualifications - do not invent new qualifications.
+7. Include a clear call to action in the closing paragraph.
+8. Format as a proper business letter with date, address block, salutation, and professional closing.
+
+IMPORTANT FORMATTING:
+1. Output format: Return ONLY the complete cover letter with title.
+2. DO NOT include any explanations, headers like "COVER LETTER:", or notes.
+3. Make sure to include the title in the format: "Cover letter for [Company]: [Position]" at the top.
+`;
+      
+      // Update progress
+      await storage.updateProcessing(processingId, { progress: 60 });
+      
+      // Call Gemini API to generate the cover letter
+      const coverResult = await model.generateContent(coverLetterPrompt);
+      const tailoredCoverLetter = coverResult.response.text();
+      console.log("Generated cover letter content from AI, length:", tailoredCoverLetter.length);
+      
+      // Combine both documents with clear separation
+      tailoredContent = `=== TAILORED CV/RESUME ===\n\n${tailoredCV}\n\n\n=== COVER LETTER ===\n\n${tailoredCoverLetter}`;
+    } else {
+      // Generate a single document (CV or cover letter)
+      const prompt = `
 You are a professional document tailoring assistant with expertise in helping job applicants match their experience to specific job requirements.
 
 TASK:
@@ -590,14 +676,15 @@ IMPORTANT FORMATTING:
 2. DO NOT include any explanations, headers like "UPDATED CONTENT:", or notes.
 3. ${document.documentType === 'cover' ? 'Make sure to include the title in the format: "Cover letter for [Company]: [Position]" at the top.' : 'Make sure this is a properly formatted resume/CV.'}
 `;
-    
-    // Update progress
-    await storage.updateProcessing(processingId, { progress: 50 });
-    
-    // Call Gemini API to rewrite content
-    const result = await model.generateContent(prompt);
-    const tailoredContent = result.response.text();
-    console.log("Generated content from AI, length:", tailoredContent.length);
+
+      // Update progress
+      await storage.updateProcessing(processingId, { progress: 50 });
+      
+      // Call Gemini API to rewrite content
+      const result = await model.generateContent(prompt);
+      tailoredContent = result.response.text();
+      console.log("Generated content from AI, length:", tailoredContent.length);
+    }
     
     // Update progress - skip template application
     await storage.updateProcessing(processingId, { progress: 80 });
