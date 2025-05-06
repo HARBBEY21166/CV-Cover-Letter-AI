@@ -39,7 +39,11 @@ const upload = multer({
 });
 
 // Initialize Google Gemini API
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+if (!process.env.GEMINI_API_KEY) {
+  throw new Error("GEMINI_API_KEY is not set in environment variables. Please add it to your .env file.");
+}
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 export async function registerRoutes(app: Express): Promise<Server> {
