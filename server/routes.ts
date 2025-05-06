@@ -609,19 +609,49 @@ ORIGINAL DOCUMENT CONTENT:
 ${content}
 
 INSTRUCTIONS:
-1. Start with a title in the format: "Cover letter for ${job.company}: ${job.title}"
-2. Create a professional cover letter addressed to the hiring manager at ${job.company} for the ${job.title} position.
+1. Extract the name and contact information from the resume.
+2. Format the cover letter with the following structure:
+   - Full name at the top
+   - Contact information (email, phone)
+   - Current date (use May 6, 2025)
+   - Employer's information (Company name, HR/Talent Acquisition Team)
+   - "Dear Hiring Manager," as salutation
+   - 3-4 well-structured paragraphs:
+     * First paragraph: Express interest in the position and briefly introduce yourself
+     * Middle paragraphs: Highlight relevant skills and experiences that match the job requirements
+     * Final paragraph: Call to action and thank them for their consideration
+   - "Best regards," as closing
+   - Full name at the end
 3. Use relevant keywords from the job description in a natural way.
-4. Structure the letter with: formal header, introduction explaining my interest, 1-2 paragraphs highlighting relevant experiences/skills from my resume, and a conclusion.
-5. Keep the tone professional but engaging.
-6. Use information from my resume to highlight my qualifications - do not invent new qualifications.
-7. Include a clear call to action in the closing paragraph.
-8. Format as a proper business letter with date, address block, salutation, and professional closing.
+4. Keep the tone professional but engaging.
+5. Use information from my resume to highlight my qualifications - do not invent new qualifications.
+6. Focus on how my skills and experience align with the specific role requirements.
 
 IMPORTANT FORMATTING:
-1. Output format: Return ONLY the complete cover letter with title.
-2. DO NOT include any explanations, headers like "COVER LETTER:", or notes.
-3. Make sure to include the title in the format: "Cover letter for [Company]: [Position]" at the top.
+1. Output format: Return ONLY the complete cover letter with the exact formatting described above.
+2. DO NOT include any explanations, notes, or headers like "COVER LETTER:".
+3. DO NOT use placeholder text like [Name] or [Company] - use the actual information.
+4. Format the letter as continuous text with proper paragraph breaks - do not use bullet points unless including a specific list of relevant skills.
+5. The cover letter must be complete and ready to send without any further editing needed.
+
+REFERENCE FORMAT:
+[Name]
+[Email]
+[Date]
+[Company] Talent Acquisition Team
+[Company]
+Dear Hiring Manager,
+
+[First paragraph expressing interest and introducing yourself]
+
+[Second paragraph explaining why you're a good fit]
+
+[Skills/qualifications paragraph, may include bullet points for specific relevant skills]
+
+[Final paragraph with call to action and thanks]
+
+Best regards,
+[Name]
 `;
       
       // Update progress
@@ -661,20 +691,29 @@ ${document.documentType === 'cv'
 5. Make sure to adjust bullet points to highlight accomplishments that relate to this position.
 6. Only include information from my original document - do not invent new experiences or skills.
 7. Prioritize updating the most relevant parts of my CV that match the position requirements.`
-  : `1. Start with a title in the format: "Cover letter for ${job.company}: ${job.title}"
-2. Create a professional cover letter addressed to the hiring manager at ${job.company} for the ${job.title} position.
+  : `1. Extract the name and contact information from the resume.
+2. Format the cover letter with the following structure:
+   - Full name at the top
+   - Contact information (email, phone)
+   - Current date (use May 6, 2025)
+   - Employer's information (Company name, HR/Talent Acquisition Team)
+   - "Dear Hiring Manager," as salutation
+   - 3-4 well-structured paragraphs:
+     * First paragraph: Express interest in the position and briefly introduce yourself
+     * Middle paragraphs: Highlight relevant skills and experiences that match the job requirements
+     * Final paragraph: Call to action and thank them for their consideration
+   - "Best regards," as closing
+   - Full name at the end
 3. Use relevant keywords from the job description in a natural way.
-4. Structure the letter with: formal header, introduction explaining my interest, 1-2 paragraphs highlighting relevant experiences/skills from my resume, and a conclusion.
-5. Keep the tone professional but engaging.
-6. Use information from my resume to highlight my qualifications - do not invent new qualifications.
-7. Include a clear call to action in the closing paragraph.
-8. Format as a proper business letter with date, address block, salutation, and professional closing.`
+4. Keep the tone professional but engaging.
+5. Use information from my resume to highlight my qualifications - do not invent new qualifications.
+6. Focus on how my skills and experience align with the specific role requirements.`
 }
 
 IMPORTANT FORMATTING:
-1. Output format: Return ONLY the ${document.documentType === 'cv' ? 'updated CV/Resume' : 'complete cover letter with title'}.
+1. Output format: Return ONLY the ${document.documentType === 'cv' ? 'updated CV/Resume' : 'complete cover letter'}.
 2. DO NOT include any explanations, headers like "UPDATED CONTENT:", or notes.
-3. ${document.documentType === 'cover' ? 'Make sure to include the title in the format: "Cover letter for [Company]: [Position]" at the top.' : 'Make sure this is a properly formatted resume/CV.'}
+3. ${document.documentType === 'cover' ? 'Format the letter as continuous text with proper paragraph breaks - do not use bullet points unless including a specific list of relevant skills. The cover letter must be complete and ready to send without any further editing needed.' : 'Make sure this is a properly formatted resume/CV.'}
 `;
 
       // Update progress
