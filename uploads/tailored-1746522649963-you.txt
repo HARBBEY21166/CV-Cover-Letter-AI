@@ -1,0 +1,83 @@
+=== TAILORED CV/RESUME ===
+
+Abbey Aina
+Web Designer
+portfolio: abbeylii.com
+location: whitney road, bramley view, johannesburg, south africa
+• Linkedin: https://www.linkedin.com/in/abbey0
+• Github: https://github.com/HARBBEY21166
+• Email: olamilekansunday445@gmail.com
+• Phone: +27 84 317 1229
+
+Summary
+Creative and detail-oriented Web Designer with over two years of experience designing and developing dynamic and responsive websites. Passionate about delivering user-friendly digital experiences and translating creative ideas into functional and visually appealing web solutions. Proven ability to collaborate with cross-functional teams to deliver high-quality web designs that meet client objectives.
+
+Technical Skills
+Languages: HTML, CSS (inline and traditional), JavaScript
+Frameworks & Libraries: React.js, Bootstrap
+Tools & Platforms: Adobe Creative Suite (familiar), Figma (familiar), Sketch (familiar), GitHub, Netlify, WordPress (Bitnami, VirtualBox), InfinityFree
+Additional Skills: Responsive design, User-centered design, Cross-browser compatibility, Version control, UI/UX principles, Wireframing, Prototyping
+
+Experience
+Front-end Developer
+Freelance | Gig-at-a-Startup | October 2024 - November 2024
+* Developed the WanderUnion project, ensuring seamless UI/UX and mobile responsiveness, resulting in a visually appealing website.
+* Collaborated closely with clients to refine designs, address feedback, and create functional web solutions that aligned with their brand concepts.
+* Optimized website performance and usability to improve design effectiveness, contributing to client satisfaction and retention.
+
+Intern Web Developer
+GAO Tek | Remote Internship | May 2024 – November 2024
+* Built and managed WordPress sites using Bitnami and VirtualBox environments, customizing themes to meet design specifications.
+* Implemented SEO best practices and performance optimizations.
+* Gained hands-on experience in WordPress theme customization and plugin integration.
+
+Education
+ALX Front-end Development Program | Graduated October 30, 2024
+Focused on JavaScript, responsive web design, and real-world project management.
+Completed capstone projects including interactive web applications and dynamic landing pages.
+
+Projects
+Responsive Navigation Menu | Deployed on Netlify
+Designed and coded a fully responsive navigation system, enhancing user experience across devices.
+
+Currency Converter Web App | Personal Project
+Built a dynamic web application to provide real-time currency conversion with a clean, intuitive interface.
+
+Certifications
+Front-end Development Certification – freeCodeCamp
+Front-end Web Development Certification – Alx_Africa
+
+Languages
+English (Fluent)
+
+Interests
+Web development trends, UI/UX design, Gaming
+
+
+
+=== COVER LETTER ===
+
+Abbey Aina
+olamilekansunday445@gmail.com
+May 6, 2025
+
+Remote Recruitment Talent Acquisition Team
+Remote Recruitment
+
+Dear Hiring Manager,
+
+I am writing to express my enthusiastic interest in the Web Designer position at Remote Recruitment, as advertised on [Platform where you saw the advertisement - replace this placeholder]. With over two years of experience as a Front-end Web Developer, I possess a strong foundation in creating dynamic, responsive, and visually appealing websites. I am confident my skills and passion for crafting outstanding web experiences align perfectly with your requirements.
+
+My experience in developing the WanderUnion project as a Freelance Front-end Developer demonstrates my ability to deliver seamless UI/UX and mobile responsiveness, directly addressing the need for responsive web designs. Furthermore, my internship at GAO Tek provided me with hands-on experience in WordPress theme customization, plugin integration, and implementing SEO best practices, showcasing my proficiency in managing and optimizing websites. I excel in translating creative ideas into functional web solutions, a key aspect of the role's responsibilities.
+
+I am proficient in a range of design tools and technologies essential for creating engaging online experiences:
+*   HTML, CSS (inline and traditional), JavaScript: For building the structure and style of websites.
+*   React.js and Bootstrap: For creating dynamic and responsive user interfaces.
+*   Adobe Creative Suite, Figma, or Sketch: Familiarity with industry standard design tools.
+*   Responsive Design: Proven ability to create websites optimized for various devices.
+*   UI/UX Principles: A solid understanding of user-centered design and usability.
+
+Thank you for considering my application. I have attached my resume for your review, which further details my qualifications and experience. I am eager to discuss how my skills and passion for web design can contribute to Remote Recruitment's success. I look forward to hearing from you soon.
+
+Best regards,
+Abbey Aina
