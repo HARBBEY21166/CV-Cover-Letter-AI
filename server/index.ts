@@ -1,8 +1,12 @@
+import 'dotenv/config'; // Load environment variables from .env file
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { seedDefaultTemplates } from "./seed-templates";
 import { scheduleFileCleanup } from "./cleanup";
+
+// Log that .env file was loaded, but don't show the actual values
+console.log("Environment variables loaded from .env file");
 
 const app = express();
 app.use(express.json());
