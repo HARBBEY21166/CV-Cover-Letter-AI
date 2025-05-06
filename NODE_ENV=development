@@ -1,0 +1,6 @@
+Environment variables loaded from .env file
+Checking for templates in the database...
+Found 3 existing CV templates.
+Found 3 existing cover letter templates.
+11:06:43 AM [express] Template seeding completed
+11:06:43 AM [express] File cleanup scheduler started (4 hour retention)
